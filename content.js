@@ -447,6 +447,37 @@ function buildLibraryPanel(inputBox, closePanel) {
         item.addEventListener("mouseleave", () => { item.style.background = "transparent"; });
         item.addEventListener("click", (e) => {
           e.stopPropagation();
+
+          // Custom snippet: open editor first
+          if (fn.isCustomSnippet) {
+            closePanel();
+            const savedSnippet = localStorage.getItem("prompthelper_custom_snippet") || "";
+            if (!savedSnippet) {
+              // No snippet saved yet — open editor
+              openSnippetEditor(() => {
+                const baseText = isEnhanced ? originalText : cleanText(getInputText(inputBox));
+                if (!baseText) return;
+                if (!isEnhanced) originalText = baseText;
+                const lang = LANGUAGES[selectedLangIndex];
+                const enhanced = fn.build(baseText, lang.instruction);
+                setInputText(inputBox, enhanced);
+                setUndoMode();
+              });
+            } else {
+              // Snippet exists — show preview with option to edit or apply
+              openSnippetEditor(() => {
+                const baseText = isEnhanced ? originalText : cleanText(getInputText(inputBox));
+                if (!baseText) return;
+                if (!isEnhanced) originalText = baseText;
+                const lang = LANGUAGES[selectedLangIndex];
+                const enhanced = fn.build(baseText, lang.instruction);
+                setInputText(inputBox, enhanced);
+                setUndoMode();
+              });
+            }
+            return;
+          }
+
           const baseText = isEnhanced ? originalText : cleanText(getInputText(inputBox));
           if (!baseText) {
             alert("Please type something in the chat box first!");
