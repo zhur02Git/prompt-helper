@@ -426,7 +426,7 @@ function snapToInput(inputBox, wrapper) {
 }
 
 // ---- Build More Functions panel ----
-function buildLibraryPanel(inputBox, closePanel) {
+function buildLibraryPanel(inputBox, closePanel, ctx) {
   const panel = document.createElement("div");
   panel.id = "prompt-helper-lib-panel";
   panel.style.cssText = `
@@ -571,27 +571,27 @@ function buildLibraryPanel(inputBox, closePanel) {
           if (fn.isCustomSnippet) {
             closePanel();
             openSnippetEditor(() => {
-              const baseText = isEnhanced ? originalText : cleanText(getInputText(inputBox));
+              const baseText = ctx.getIsEnhanced() ? ctx.getOriginalText() : ctx.cleanText(ctx.getInputText(inputBox));
               if (!baseText) return;
-              if (!isEnhanced) originalText = baseText;
-              const lang = LANGUAGES[selectedLangIndex];
+              if (!ctx.getIsEnhanced()) ctx.setOriginalText(baseText);
+              const lang = ctx.getSelectedLang();
               const enhanced = fn.build(baseText, lang.instruction);
-              setInputText(inputBox, enhanced);
-              setUndoMode();
+              ctx.setInputText(inputBox, enhanced);
+              ctx.setUndoMode();
             });
             return;
           }
 
-          const baseText = isEnhanced ? originalText : cleanText(getInputText(inputBox));
+          const baseText = ctx.getIsEnhanced() ? ctx.getOriginalText() : ctx.cleanText(ctx.getInputText(inputBox));
           if (!baseText) {
             alert("Please type something in the chat box first!");
             return;
           }
-          if (!isEnhanced) originalText = baseText;
-          const lang = LANGUAGES[selectedLangIndex];
+          if (!ctx.getIsEnhanced()) ctx.setOriginalText(baseText);
+          const lang = ctx.getSelectedLang();
           const enhanced = fn.build(baseText, lang.instruction);
-          setInputText(inputBox, enhanced);
-          setUndoMode();
+          ctx.setInputText(inputBox, enhanced);
+          ctx.setUndoMode();
           closePanel();
         });
       } else {
@@ -828,7 +828,16 @@ function injectButton(inputBox) {
         e.stopPropagation();
         if (panel) { closePanel(); return; }
         isPanelOpen = true;
-        panel = buildLibraryPanel(inputBox, closePanel);
+        panel = buildLibraryPanel(inputBox, closePanel, {
+          getIsEnhanced: () => isEnhanced,
+          getOriginalText: () => originalText,
+          setOriginalText: (t) => { originalText = t; },
+          getInputText,
+          setInputText,
+          setUndoMode,
+          getSelectedLang: () => LANGUAGES[selectedLangIndex],
+          cleanText
+        });
         iconWrapper.appendChild(panel);
         document.addEventListener("keydown", onEsc);
       });
