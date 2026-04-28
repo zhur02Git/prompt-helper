@@ -11,4 +11,4 @@ const FIREBASE_CONFIG = {
   appId: "1:584530126594:web:0800cd39b80ede3dbd041b",
   measurementId: "G-ED2949CXD2"
 };
-const FREE_DAILY_LIMIT = 1;
+const FREE_DAILY_LIMIT = 5;
