@@ -317,7 +317,7 @@ function showUpgradePrompt() {
   };
 
   document.getElementById("upgrade-yes-btn").addEventListener("click", () => {
-    window.open("https://buy.stripe.com/6oU7sD574cjx0HZ5yCdQQ04", "_blank");
+    window.open("https://rui-ai.com/#pricing", "_blank");
     closePrompt();
   });
   document.getElementById("upgrade-no-btn").addEventListener("click", closePrompt);
@@ -502,7 +502,7 @@ function buildLibraryPanel(inputBox, closePanel) {
         const upgradeBtn = document.getElementById("panel-upgrade-btn");
         if (upgradeBtn) {
           upgradeBtn.addEventListener("click", () => {
-            window.open("https://buy.stripe.com/6oU7sD574cjx0HZ5yCdQQ04", "_blank");
+            window.open("https://rui-ai.com/#pricing", "_blank");
           });
         }
       }, 100);
