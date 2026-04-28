@@ -428,6 +428,7 @@ function snapToInput(inputBox, wrapper) {
 // ---- Build More Functions panel ----
 function buildLibraryPanel(inputBox, closePanel) {
   const panel = document.createElement("div");
+  panel.id = "prompt-helper-lib-panel";
   panel.style.cssText = `
     position: absolute;
     bottom: 52px;
@@ -1032,7 +1033,7 @@ function injectButton(inputBox) {
   langWrapper.appendChild(langPill);
 
   function showMenu() {
-    if (isEnhanced) return;
+    if (isEnhanced && !isPanelOpen) return;
     menu.style.opacity = "1";
     menu.style.pointerEvents = "auto";
     menu.style.transform = "translateX(0)";
@@ -1046,7 +1047,12 @@ function injectButton(inputBox) {
   }
 
   wrapper.addEventListener("mouseenter", showMenu);
-  wrapper.addEventListener("mouseleave", hideMenu);
+  wrapper.addEventListener("mouseleave", (e) => {
+    // Don't hide if mouse moved into the panel (which is outside wrapper bounds)
+    const panelEl = document.getElementById("prompt-helper-lib-panel");
+    if (panelEl && panelEl.contains(e.relatedTarget)) return;
+    hideMenu();
+  });
 
   // ---- Drag logic ----
   let isDragging = false;
