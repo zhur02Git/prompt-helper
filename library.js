@@ -33,8 +33,6 @@ var MORE_FUNCTIONS = [
         "✅ Opportunity: [potential upside scenarios]",
         "💡 Professional Take: [balanced conclusion]",
         "",
-        "⚠️ This analysis is for informational purposes only and does not constitute financial advice. Please consult a licensed financial advisor before making investment decisions.",
-        "",
         "# QUESTION",
         text
       ].filter(Boolean).join("\n").trim();
@@ -99,8 +97,6 @@ var MORE_FUNCTIONS = [
         "⚠️ Key Risks: [what could go wrong and consequences]",
         "✅ Recommended Steps: [practical actions to take]",
         "",
-        "⚠️ This is general legal information only and does not constitute legal advice. Please consult a licensed attorney in your jurisdiction for advice specific to your situation.",
-        "",
         "# SITUATION",
         text
       ].filter(Boolean).join("\n").trim();
@@ -162,8 +158,6 @@ var MORE_FUNCTIONS = [
         "🍽️ Sample Approach: [concrete example or meal idea if relevant]",
         "⚠️ Watch Out For: [common mistakes or things to avoid]",
         "",
-        "⚠️ This is general nutritional information. Please consult a registered dietitian for personalized medical nutrition therapy.",
-        "",
         "# QUESTION",
         text
       ].filter(Boolean).join("\n").trim();
@@ -195,8 +189,6 @@ var MORE_FUNCTIONS = [
         "🚨 Red Flags: [symptoms that need immediate medical attention]",
         "✅ Recommended Next Steps: [see a doctor / specialist / self-care]",
         "💊 General Guidance: [lifestyle or care tips while awaiting care]",
-        "",
-        "⚠️ This is general health information only and is not a medical diagnosis. Please consult a qualified healthcare professional for proper evaluation and treatment.",
         "",
         "# HEALTH QUESTION",
         text
