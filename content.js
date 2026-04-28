@@ -813,6 +813,7 @@ function injectButton(inputBox) {
         if (panel) { panel.remove(); panel = null; }
         isPanelOpen = false;
         document.removeEventListener("keydown", onEsc);
+        hideMenu(true);
       }
 
       function onEsc(e) {
@@ -1037,8 +1038,8 @@ function injectButton(inputBox) {
     menu.style.transform = "translateX(0)";
   }
 
-  function hideMenu() {
-    if (isPanelOpen) return;
+  function hideMenu(force = false) {
+    if (isPanelOpen && !force) return;
     menu.style.opacity = "0";
     menu.style.pointerEvents = "none";
     menu.style.transform = "translateX(10px)";
