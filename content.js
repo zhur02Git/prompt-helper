@@ -251,6 +251,80 @@ let originalText = "";
 let isEnhanced = false;
 let selectedLangIndex = 0;
 
+// ---- Promo codes (case-insensitive) ----
+const PROMO_CODES = ["Rui", "PRODEV", "TRYIT"];
+
+function applyPromoCode(code, onSuccess) {
+  const valid = PROMO_CODES.find(c => c.toLowerCase() === code.trim().toLowerCase());
+  if (valid) {
+    chrome.storage.local.set({ userPlan: "pro" }, () => {
+      if (onSuccess) onSuccess();
+    });
+    return true;
+  }
+  return false;
+}
+
+function buildPromoSection(onActivated) {
+  const wrapper = document.createElement("div");
+  wrapper.style.cssText = `margin-top: 10px;`;
+  wrapper.innerHTML = `
+    <div style="display:flex; gap:6px; align-items:center;">
+      <input id="ph-promo-input" type="text" placeholder="Promo code" style="
+        flex:1; padding:8px 10px;
+        border:1.5px solid #e0e0e0; border-radius:8px;
+        font-size:12px; font-family:inherit;
+        outline:none; color:#1a1a1a;
+        transition: border-color 0.15s;
+      " />
+      <button id="ph-promo-btn" style="
+        padding:8px 12px;
+        background:#1a1a1a; color:white;
+        border:none; border-radius:8px;
+        font-size:12px; font-weight:600;
+        cursor:pointer; white-space:nowrap;
+        transition: background 0.15s;
+      ">Apply</button>
+    </div>
+    <div id="ph-promo-msg" style="font-size:11px; margin-top:5px; min-height:14px;"></div>
+  `;
+
+  setTimeout(() => {
+    const input = document.getElementById("ph-promo-input");
+    const btn = document.getElementById("ph-promo-btn");
+    const msg = document.getElementById("ph-promo-msg");
+    if (!input || !btn || !msg) return;
+
+    input.addEventListener("focus", () => { input.style.borderColor = "#ff6b35"; });
+    input.addEventListener("blur", () => { input.style.borderColor = "#e0e0e0"; });
+
+    const tryApply = () => {
+      const code = input.value.trim();
+      if (!code) return;
+      const success = applyPromoCode(code, () => {
+        msg.style.color = "#22a35a";
+        msg.textContent = "✓ Pro unlocked! Enjoy unlimited access.";
+        btn.style.background = "#22a35a";
+        setTimeout(() => { if (onActivated) onActivated(); }, 1200);
+      });
+      if (!success) {
+        msg.style.color = "#e53e3e";
+        msg.textContent = "✗ Invalid code. Please try again.";
+        input.style.borderColor = "#e53e3e";
+        setTimeout(() => {
+          input.style.borderColor = "#e0e0e0";
+          msg.textContent = "";
+        }, 2000);
+      }
+    };
+
+    btn.addEventListener("click", tryApply);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") tryApply(); });
+  }, 50);
+
+  return wrapper;
+}
+
 // ---- Show upgrade prompt ----
 function showUpgradePrompt() {
   const existing = document.getElementById("prompt-helper-upgrade-prompt");
@@ -290,7 +364,7 @@ function showUpgradePrompt() {
       Upgrade to Pro
     </div>
     <div style="font-size:13px; color:#666; line-height:1.5; margin-bottom:18px;">
-      More Functions is a Pro feature.<br>
+      You've used all your free enhancements today.<br>
       Upgrade to unlock unlimited access.
     </div>
     <button id="upgrade-yes-btn" style="
@@ -305,8 +379,18 @@ function showUpgradePrompt() {
       background:transparent; color:#999;
       border:1px solid #e0e0e0; border-radius:10px;
       font-size:13px; cursor:pointer;
+      margin-bottom:2px;
     ">Maybe later</button>
   `;
+
+  // Add promo section
+  const promoSection = buildPromoSection(() => {
+    prompt.remove();
+    backdrop.remove();
+    // Reload page to reflect pro status
+    location.reload();
+  });
+  prompt.appendChild(promoSection);
 
   document.body.appendChild(backdrop);
   document.body.appendChild(prompt);
@@ -525,8 +609,17 @@ function buildLibraryPanel(inputBox, closePanel) {
           border:none; border-radius:8px;
           padding:7px 16px; font-size:12px;
           font-weight:600; cursor:pointer; width:100%;
+          margin-bottom:2px;
         ">Upgrade to Pro — $2.99/wk</button>
       `;
+
+      // Add promo section below banner
+      const bannerPromo = buildPromoSection(() => {
+        closePanel();
+        location.reload();
+      });
+      bannerPromo.style.marginTop = "8px";
+      banner.appendChild(bannerPromo);
       list.appendChild(banner);
 
       setTimeout(() => {
