@@ -433,7 +433,7 @@ function buildLibraryPanel(inputBox, closePanel) {
     bottom: 52px;
     left: 50%;
     transform: translateX(-50%);
-    width: 320px;
+    width: 420px;
     background: #ffffff;
     border: 1px solid #e0e0e0;
     border-radius: 14px;
@@ -491,74 +491,93 @@ function buildLibraryPanel(inputBox, closePanel) {
     subtitle.style.color = isPro ? "#999" : "#ff6b35";
     subtitle.style.fontWeight = isPro ? "400" : "600";
 
-    MORE_FUNCTIONS.forEach((fn) => {
+    // Sort: custom snippets first, then rest
+    const sorted = [
+      ...MORE_FUNCTIONS.filter(fn => fn.isCustomSnippet),
+      ...MORE_FUNCTIONS.filter(fn => !fn.isCustomSnippet)
+    ];
+
+    sorted.forEach((fn) => {
+      const isSnippet = !!fn.isCustomSnippet;
+
+      // Snippet item has its own color scheme regardless of pro/free
+      const keywordColor = isSnippet ? "#2563eb" : (isPro ? COLOR.main : "#999");
+      const keywordBg    = isSnippet ? "#eff6ff"  : (isPro ? "#fff3ef" : "#f5f5f5");
+      const itemOpacity  = (isPro || isSnippet) ? "1" : "0.5";
+      const itemCursor   = (isPro || isSnippet) ? "pointer" : "default";
+      const descColor    = (isPro || isSnippet) ? "#333" : "#aaa";
+
       const item = document.createElement("button");
       item.style.cssText = `
         display: flex;
         flex-direction: row;
-        align-items: center;
-        gap: 12px;
-        padding: 8px 12px;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 7px 10px;
         background: transparent;
         border: none;
         border-radius: 10px;
-        cursor: ${isPro ? "pointer" : "default"};
+        cursor: ${itemCursor};
         text-align: left;
         transition: background 0.15s;
         width: 100%;
-        opacity: ${isPro ? "1" : "0.5"};
+        opacity: ${itemOpacity};
       `;
 
       const keyword = document.createElement("span");
-      keyword.innerText = isPro ? fn.keyword : "🔒 " + fn.keyword;
+      keyword.innerText = isPro || isSnippet ? fn.keyword : "🔒 " + fn.keyword;
       keyword.style.cssText = `
-        font-size: 12px;
+        font-size: 11px;
         font-weight: 600;
-        color: ${isPro ? COLOR.main : "#999"};
-        background: ${isPro ? "#fff3ef" : "#f5f5f5"};
+        color: ${keywordColor};
+        background: ${keywordBg};
         padding: 3px 8px;
         border-radius: 20px;
         white-space: nowrap;
         flex-shrink: 0;
+        margin-top: 1px;
+        min-width: 120px;
+        text-align: center;
       `;
 
-      const desc = document.createElement("span");
-      desc.innerText = fn.description;
-      desc.style.cssText = `font-size: 13px; color: ${isPro ? "#333" : "#aaa"}; line-height: 1.4;`;
+      // Short description: strip everything after " — " dash as detail, keep summary
+      const shortDesc = fn.description.replace(/\s*—.*$/, "").trim();
+      const detailDesc = fn.description.includes("—")
+        ? fn.description.split("—").slice(1).join("—").trim()
+        : "";
 
-      if (isPro) {
-        item.addEventListener("mouseenter", () => { item.style.background = "#f7f7f7"; });
+      const desc = document.createElement("span");
+      desc.style.cssText = `
+        font-size: 11.5px;
+        color: ${descColor};
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      `;
+      desc.innerHTML = `<strong style="color:${(isPro || isSnippet) ? "#1a1a1a" : "#aaa"};font-weight:600;">${shortDesc}</strong>${detailDesc ? `<span style="color:#999;"> — ${detailDesc}</span>` : ""}`;
+
+      const hoverBg = isSnippet ? "#eff6ff" : "#f7f7f7";
+
+      if (isPro || isSnippet) {
+        item.addEventListener("mouseenter", () => { item.style.background = hoverBg; });
         item.addEventListener("mouseleave", () => { item.style.background = "transparent"; });
         item.addEventListener("click", (e) => {
           e.stopPropagation();
 
-          // Custom snippet: open editor first
+          // Custom snippet: always open editor
           if (fn.isCustomSnippet) {
             closePanel();
-            const savedSnippet = localStorage.getItem("prompthelper_custom_snippet") || "";
-            if (!savedSnippet) {
-              // No snippet saved yet — open editor
-              openSnippetEditor(() => {
-                const baseText = isEnhanced ? originalText : cleanText(getInputText(inputBox));
-                if (!baseText) return;
-                if (!isEnhanced) originalText = baseText;
-                const lang = LANGUAGES[selectedLangIndex];
-                const enhanced = fn.build(baseText, lang.instruction);
-                setInputText(inputBox, enhanced);
-                setUndoMode();
-              });
-            } else {
-              // Snippet exists — show preview with option to edit or apply
-              openSnippetEditor(() => {
-                const baseText = isEnhanced ? originalText : cleanText(getInputText(inputBox));
-                if (!baseText) return;
-                if (!isEnhanced) originalText = baseText;
-                const lang = LANGUAGES[selectedLangIndex];
-                const enhanced = fn.build(baseText, lang.instruction);
-                setInputText(inputBox, enhanced);
-                setUndoMode();
-              });
-            }
+            openSnippetEditor(() => {
+              const baseText = isEnhanced ? originalText : cleanText(getInputText(inputBox));
+              if (!baseText) return;
+              if (!isEnhanced) originalText = baseText;
+              const lang = LANGUAGES[selectedLangIndex];
+              const enhanced = fn.build(baseText, lang.instruction);
+              setInputText(inputBox, enhanced);
+              setUndoMode();
+            });
             return;
           }
 
