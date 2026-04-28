@@ -4,7 +4,7 @@
 // ============================================================
 
 let buttonInjected = false;
-const FREE_DAILY_LIMIT = 10; // Change this number to update the free daily limit
+const FREE_DAILY_LIMIT = 1; // Change this number to update the free daily limit
 let isDraggingGlobal = false;
 let isPanelOpen = false;
 
@@ -317,7 +317,7 @@ function showUpgradePrompt() {
   };
 
   document.getElementById("upgrade-yes-btn").addEventListener("click", () => {
-    window.open("https://your-stripe-payment-link.com", "_blank");
+    window.open("https://buy.stripe.com/6oU7sD574cjx0HZ5yCdQQ04", "_blank");
     closePrompt();
   });
   document.getElementById("upgrade-no-btn").addEventListener("click", closePrompt);
@@ -502,7 +502,7 @@ function buildLibraryPanel(inputBox, closePanel) {
         const upgradeBtn = document.getElementById("panel-upgrade-btn");
         if (upgradeBtn) {
           upgradeBtn.addEventListener("click", () => {
-            window.open("https://your-stripe-payment-link.com", "_blank");
+            window.open("https://buy.stripe.com/6oU7sD574cjx0HZ5yCdQQ04", "_blank");
           });
         }
       }, 100);
