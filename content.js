@@ -811,7 +811,10 @@ function injectButton(inputBox) {
       let panel = null;
 
       function closePanel() {
-        if (panel) { panel.remove(); panel = null; }
+        // Also find by id in case panel reference is stale
+        const panelEl = document.getElementById("prompt-helper-lib-panel");
+        if (panelEl) panelEl.remove();
+        if (panel) { panel = null; }
         isPanelOpen = false;
         document.removeEventListener("keydown", onEsc);
         hideMenu(true);
