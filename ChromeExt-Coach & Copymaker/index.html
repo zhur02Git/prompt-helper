@@ -254,58 +254,24 @@
     }
 
     .video-wrapper {
-      background: var(--surface);
-      border: 1px solid var(--border);
       border-radius: 16px;
-      aspect-ratio: 16/9;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      cursor: pointer;
-      transition: border-color 0.2s, box-shadow 0.2s;
       overflow: hidden;
-      position: relative;
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      background: #000;
+      line-height: 0;
     }
-    .video-wrapper:hover {
-      border-color: var(--brand-mid);
-      box-shadow: 0 8px 32px rgba(249,115,22,0.1);
+
+    .video-wrapper video {
+      width: 100%;
+      display: block;
+      border-radius: 16px;
     }
 
     .video-bg {
       position: absolute;
       inset: 0;
       background: linear-gradient(135deg, #fff8f5 0%, #fafafa 100%);
-    }
-
-    .play-ring {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      border: 2px solid var(--brand);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      transition: background 0.2s;
-    }
-    .video-wrapper:hover .play-ring { background: var(--brand-light); }
-
-    .play-icon {
-      width: 0;
-      height: 0;
-      border-top: 13px solid transparent;
-      border-bottom: 13px solid transparent;
-      border-left: 22px solid var(--brand);
-      margin-left: 4px;
-    }
-
-    .video-caption {
-      font-size: 0.9rem;
-      color: var(--muted);
-      font-weight: 500;
-      position: relative;
     }
 
     /* ── FEATURES ── */
@@ -713,12 +679,14 @@
 
 <!-- VIDEO -->
 <section class="video-section" id="video">
-  <div class="video-wrapper" onclick="alert('Video coming soon — check back soon!')">
-    <div class="video-bg"></div>
-    <div class="play-ring">
-      <div class="play-icon"></div>
-    </div>
-    <div class="video-caption">See it in action &nbsp;·&nbsp; 2 min</div>
+  <div class="video-wrapper">
+    <video
+      src="https://rui-ai.com/video.mp4"
+      controls
+      preload="metadata"
+      poster=""
+      playsinline
+    ></video>
   </div>
 </section>
 
@@ -775,7 +743,7 @@
           <div class="feat-check">
             <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          5 prompt improvements / day
+          10 prompt improvements / day
         </li>
         <li>
           <div class="feat-check">
@@ -828,7 +796,7 @@
           <div class="feat-check">
             <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#f97316" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </div>
-          50+ premium templates
+          20+ premium templates
         </li>
         <li>
           <div class="feat-check">

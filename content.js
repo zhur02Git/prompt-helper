@@ -4,7 +4,7 @@
 // ============================================================
 
 let buttonInjected = false;
-const FREE_DAILY_LIMIT = 5; // Change this number to update the free daily limit
+const FREE_DAILY_LIMIT = 10; // Change this number to update the free daily limit
 let isDraggingGlobal = false;
 let isPanelOpen = false;
 
