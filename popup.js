@@ -32,19 +32,34 @@ async function loadUserData(user) {
   const ref = db.collection("users").doc(user.uid);
   const snap = await ref.get();
 
+  // Check if there's a pending upgrade for this email (paid before logging in)
+  const pendingRef = db.collection("pending_upgrades").doc(user.email);
+  const pendingSnap = await pendingRef.get();
+  const hasPendingUpgrade = pendingSnap.exists && pendingSnap.data().plan === "pro";
+
   if (!snap.exists) {
+    const plan = hasPendingUpgrade ? "pro" : "free";
     await ref.set({
       email: user.email,
       displayName: user.displayName,
-      plan: "free",
+      plan,
       usageDate: todayStr(),
       usageCount: 0,
       createdAt: new Date().toISOString()
     });
-    return { plan: "free", usageCount: 0, usageDate: todayStr() };
+    // Clear pending upgrade
+    if (hasPendingUpgrade) await pendingRef.delete();
+    return { plan, usageCount: 0, usageDate: todayStr() };
   }
 
   const data = snap.data();
+
+  // Apply pending upgrade if exists
+  if (hasPendingUpgrade && data.plan !== "pro") {
+    await ref.set({ plan: "pro", updatedAt: new Date().toISOString() }, { merge: true });
+    await pendingRef.delete();
+    data.plan = "pro";
+  }
 
   if (data.usageDate !== todayStr()) {
     await ref.set({ usageDate: todayStr(), usageCount: 0 }, { merge: true });
