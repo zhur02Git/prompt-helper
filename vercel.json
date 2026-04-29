@@ -4,5 +4,9 @@
       "memory": 128,
       "maxDuration": 10
     }
-  }
+  },
+  "routes": [
+    { "src": "/privacy", "dest": "/privacy.html" },
+    { "src": "/privacy.html", "dest": "/privacy.html" }
+  ]
 }
