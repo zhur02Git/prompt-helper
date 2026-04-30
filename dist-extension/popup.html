@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prompt Helper</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      width: 300px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #ffffff;
+      color: #1a1a1a;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: #ff6b35;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .header-icon { font-size: 22px; }
+    .header-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+    }
+    .header-subtitle {
+      font-size: 11px;
+      color: rgba(255,255,255,0.8);
+    }
+
+    /* ---- User section ---- */
+    .section { padding: 16px 20px; }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: #f7f7f7;
+      border-radius: 12px;
+      margin-bottom: 12px;
+    }
+    .user-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #ddd;
+    }
+    .user-avatar-placeholder {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .user-info { flex: 1; }
+    .user-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1a1a1a;
+    }
+    .user-email {
+      font-size: 11px;
+      color: #888;
+      margin-top: 1px;
+    }
+
+    /* ---- Plan badge ---- */
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+    .plan-free {
+      background: #f0f0f0;
+      color: #666;
+    }
+    .plan-pro {
+      background: #fff3ef;
+      color: #ff6b35;
+    }
+
+    /* ---- Usage bar ---- */
+    .usage-section {
+      margin-bottom: 12px;
+    }
+    .usage-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 6px;
+    }
+    .usage-bar-bg {
+      height: 6px;
+      background: #f0f0f0;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .usage-bar-fill {
+      height: 100%;
+      background: #ff6b35;
+      border-radius: 10px;
+      transition: width 0.3s;
+    }
+    .usage-bar-fill.danger { background: #e05c5c; }
+
+    /* ---- Buttons ---- */
+    .btn {
+      width: 100%;
+      padding: 11px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 8px;
+    }
+    .btn-google {
+      background: #ffffff;
+      color: #333;
+      border: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-google:hover { background: #f5f5f5; }
+
+    .btn-upgrade {
+      background: #ff6b35;
+      color: white;
+    }
+    .btn-upgrade:hover { background: #e55a28; }
+
+    .btn-logout {
+      background: transparent;
+      color: #999;
+      border: 1px solid #e0e0e0;
+      font-size: 13px;
+      padding: 8px;
+    }
+    .btn-logout:hover { color: #666; background: #f5f5f5; }
+
+    /* ---- Pro features list ---- */
+    .pro-features {
+      background: #fff8f5;
+      border: 1px solid #ffe0d0;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 12px;
+    }
+    .pro-features-title {
+      font-size: 12px;
+      font-weight: 700;
+      color: #ff6b35;
+      margin-bottom: 8px;
+    }
+    .pro-feature-item {
+      font-size: 12px;
+      color: #555;
+      padding: 3px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ---- Divider ---- */
+    .divider {
+      height: 1px;
+      background: #f0f0f0;
+      margin: 4px 0 12px;
+    }
+
+    /* ---- Loading ---- */
+    .loading {
+      text-align: center;
+      padding: 30px 20px;
+      color: #999;
+      font-size: 13px;
+    }
+
+    /* ---- Hidden ---- */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-icon">✦</div>
+    <div>
+      <div class="header-title">Prompt Helper</div>
+      <div class="header-subtitle">AI Prompt Enhancer</div>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div id="loading" class="loading">Loading...</div>
+
+  <!-- Logged OUT state -->
+  <div id="logged-out" class="section hidden">
+    <p style="font-size:13px; color:#666; margin-bottom:14px; line-height:1.5;">
+      Sign in to track your daily usage and unlock Pro features.
+    </p>
+
+    <div class="pro-features">
+      <div class="pro-features-title">⚡ Pro Plan includes</div>
+      <div class="pro-feature-item">✦ Unlimited prompt enhancements</div>
+      <div class="pro-feature-item">🔓 Access to More Functions library</div>
+      <div class="pro-feature-item">🌍 All language options</div>
+    </div>
+
+    <button class="btn btn-google" id="btn-google-login">
+      <svg width="16" height="16" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+      </svg>
+      Sign in with Google
+    </button>
+  </div>
+
+  <!-- Logged IN state -->
+  <div id="logged-in" class="section hidden">
+
+    <!-- User card -->
+    <div class="user-card">
+      <div id="user-avatar-wrap">
+        <div class="user-avatar-placeholder">👤</div>
+      </div>
+      <div class="user-info">
+        <div class="user-name" id="user-name">—</div>
+        <div class="user-email" id="user-email">—</div>
+        <div id="plan-badge" class="plan-badge plan-free">Free Plan</div>
+      </div>
+    </div>
+
+    <!-- Usage bar (free users only) -->
+    <div class="usage-section" id="usage-section">
+      <div class="usage-label">
+        <span>Daily usage</span>
+        <span id="usage-text">0 / 10</span>
+      </div>
+      <div class="usage-bar-bg">
+        <div class="usage-bar-fill" id="usage-bar" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- Upgrade CTA (free users only) -->
+    <div id="upgrade-section">
+      <div class="pro-features">
+        <div class="pro-features-title">⚡ Upgrade to Pro</div>
+        <div class="pro-feature-item">✦ Unlimited enhancements</div>
+        <div class="pro-feature-item">🔓 More Functions library</div>
+        <div class="pro-feature-item">🌍 All language options</div>
+      </div>
+      <button class="btn btn-upgrade" id="btn-upgrade">
+        Upgrade to Pro — $2.99/wk
+      </button>
+    </div>
+
+    <!-- Pro user message -->
+    <div id="pro-section" class="hidden">
+      <div style="text-align:center; padding: 8px 0 14px;">
+        <div style="font-size:28px;">🎉</div>
+        <div style="font-size:14px; font-weight:600; color:#ff6b35; margin-top:4px;">You're on Pro!</div>
+        <div style="font-size:12px; color:#888; margin-top:4px;">Unlimited access to all features.</div>
+      </div>
+    </div>
+
+    <button class="btn btn-logout" id="btn-logout">Sign out</button>
+  </div>
+
+<script src="firebase/firebase-app-compat.js"></script>
+  <script src="firebase/firebase-auth-compat.js"></script>
+  <script src="firebase/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -2,6 +2,7 @@
 // library.js - More Functions Library
 // Add new functions here without touching content.js
 // ============================================================
+// SYNCED FROM: ../library.js
 
 // Use var so content.js can access this across files
 var MORE_FUNCTIONS = [
